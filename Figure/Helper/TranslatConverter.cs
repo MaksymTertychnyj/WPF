@@ -8,13 +8,10 @@ namespace Figure.Helper
 {
     public class TranslatConverter : IMultiValueConverter
     {
-        string? nameTargetObject;
-        ResourceDictionary? windowResources;
-
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            nameTargetObject = values[0]?.ToString();
-            windowResources = values[1] is MainViewModel viewModel ?
+            string? nameTargetObject = values[0]?.ToString();
+            ResourceDictionary? windowResources = values[1] is MainViewModel viewModel ?
                 viewModel.LocalizationProvider.MainWindowResources
                 : null;
 
