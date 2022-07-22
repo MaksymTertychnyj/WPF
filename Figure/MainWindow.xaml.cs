@@ -25,7 +25,11 @@ namespace Figure
         public MainWindow()
         {
             InitializeComponent();
-            MainViewModel = new MainViewModel() { Elements = FigureArea.Children};
+            MainViewModel = new MainViewModel() 
+                { 
+                    Elements = FigureArea.Children, 
+                };
+            MainViewModel.LocalizationProvider.ChangeLocalization(Model.Localization.RU, Resources);
             DataContext = MainViewModel;
         }
 

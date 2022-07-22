@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -21,23 +22,40 @@ namespace Figure.ViewModel
         public event PropertyChangedEventHandler? PropertyChanged;
         public UIElementCollection? Elements { get; set; }
         public ObservableCollection<Model.Figure> Figures { get; set; }
-
-        private Model.PointMax _Pmax;
-        public Model.PointMax Pmax 
-        {
-            get { return _Pmax; }
-            set 
-            {
-                _Pmax = value;
-                OnPropertyChanged(nameof(Pmax));
-            }
-        }
+        public LocalizationProvider LocalizationProvider { get; set; }
+        public ObservableCollection<string> ListOfLocalization { get; set; }
 
         public MainViewModel()
         {
             _Pmax = new Model.PointMax();
             Figures = new ObservableCollection<Model.Figure>();
+            LocalizationProvider = new LocalizationProvider();
+            ListOfLocalization = new ObservableCollection<string>();
+            InitListOfLocalization();
             Task.FromResult(Cycle());
+        }
+
+        public Model.Localization SelectedLocalization 
+        {
+            get { return LocalizationProvider.CurrentLocalization; }
+            set
+            {
+                LocalizationProvider.ChangeLocalization(value, LocalizationProvider.MainWindowResources);
+                RefreshFigureList();
+                OnPropertyChanged(nameof(SelectedLocalization));
+                
+            }
+        }
+
+        private Model.PointMax _Pmax;
+        public Model.PointMax Pmax
+        {
+            get { return _Pmax; }
+            set
+            {
+                _Pmax = value;
+                OnPropertyChanged(nameof(Pmax));
+            }
         }
 
         public async Task Cycle()
@@ -110,6 +128,26 @@ namespace Figure.ViewModel
             Figures!.Add(figure);
             Elements!.Add(figure.Shape);
             OnPropertyChanged(nameof(Figures));
+        }
+
+        private void RefreshFigureList()
+        {
+            var tempFigures = new ObservableCollection<Model.Figure>();
+            foreach (var figure in Figures)
+            {
+                tempFigures.Add(figure);
+            }
+            Figures = tempFigures;
+            OnPropertyChanged(nameof(Figures));
+        }
+
+        private void InitListOfLocalization()
+        {
+            var values = Enum.GetValues(typeof(Model.Localization));
+            foreach (var value in values)
+            {
+                ListOfLocalization.Add(value.ToString()!);
+            }
         }
     }
 }
